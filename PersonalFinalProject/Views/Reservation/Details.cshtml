@@ -1,0 +1,46 @@
+﻿@model DetailVM
+
+@{
+    ViewData["Title"] = "Reservation";
+}
+
+<h1>Reservation</h1>
+
+<h3>Your Details</h3>
+
+<form asp-action="Reservation">
+    <div style="border:1px solid red; padding:10px; margin:10px">
+    
+    <div>
+        <label>First Name: </label>
+        <input asp-for="FirstName" type="firstName"/>
+    </div>
+    <div>
+        <label>Last Name: </label>
+        <input asp-for="LastName" type="lastName"/>
+    </div>
+    <div>
+        <label>Phone Number: </label>
+        <input asp-for="PhoneNumber" type="phoneNumber"/>
+    </div>
+    <div>
+        <label>Email: </label>
+        <input asp-for="Email" type="email"/>
+    </div>
+    <div>
+        <label>Occasion (optional): </label>
+        <input asp-for="Occasion" type="occasion"/>
+    </div>
+    <div>
+        <label>Special Request (optional): </label>
+        <input asp-for="Note" type="note"/>
+    </div>
+
+
+
+    </div>
+    @*<input type="submit" value="Save"/>*@
+    <a href="~/Reservation/Reservations/Sittings" >Submit</a>
+
+
+</form>

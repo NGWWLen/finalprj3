@@ -1,0 +1,31 @@
+﻿@*@using PersonalFinalProject.Controllers;
+@using PersonalFinalProject.Data;
+@model IEnumerable<ReservationController>
+@model Reservation*@
+@model PersonalFinalProject.Models.ReservationVM 
+
+
+
+@{
+    ViewData["Title"] = "Reservation";
+}
+
+<h1>Reservation</h1>
+
+
+</ul>
+
+<h3>Sittings </h3>
+
+<form asp-action="Reservation">
+    <div style="border:1px solid red; padding:10px; margin:10px">
+    <div> @ViewBag.Date</div>
+    </div>
+    @*<input type="submit" value="Save"/>*@
+    <a href="~/Reservation/Reservations/Details" >Submit</a>
+
+
+</form>
+
+
+
