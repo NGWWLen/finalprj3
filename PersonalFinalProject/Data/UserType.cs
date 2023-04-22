@@ -2,14 +2,16 @@
 
 namespace PersonalFinalProject.Data
 {
-    public class ReservationStatus
+    public class UserType
     {
         [Key]
         public int Id { get; set; }
+
+        [Required]
         public string Name { get; set; }
 
-        //Navigation property
-        //A status can be used by ZERO to MANY reservations
-        public List<Reservation>? Reservations { get; set; }
+        //Navigation Property
+        //A UserType can define 0-* Users
+        public List<User>? Users { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace PersonalFinalProject.Data
         public DateTime Start { get; set; }
 
         [Required]
-        [RegularExpression(@"^[0-9]{2}$")]
+        [Range(1,24)]
         public int Duration { get; set; }
 
         [Required]
