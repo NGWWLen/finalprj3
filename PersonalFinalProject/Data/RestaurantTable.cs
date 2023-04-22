@@ -16,6 +16,6 @@ namespace PersonalFinalProject.Data
 
         //Navigation Property
         //A table can be booked in zero to many reservationTable
-        public List<ReservationTable> ReservationTables { get; set; } = new();
+        public List<ReservationTable>? ReservationTables { get; set; } = new();
     }
 }

@@ -8,13 +8,14 @@ namespace PersonalFinalProject.Data
         public int Id { get; set; }
 
         //Navigation Property
-        //A ReservationTable can book one to many Tables 1-*
+        //A ReservationTable can book one to one table
         [Required]
-        public List<RestaurantTable> RestaurantTables { get; set; }
+        public int RestaurantTableId { get; set; }
+        public RestaurantTable RestaurantTable { get; set; }
 
         //Navigation Property
-        //A ReservationTable can only be reserved by one Reservation 1-1
+        //A ReservationTable can only be reserved by one Reservation
         [Required]
-        public Reservation Reservation { get; set; } = new();
+        public Reservation Reservation { get; set; }
     }
 }

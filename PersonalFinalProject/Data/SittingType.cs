@@ -10,7 +10,6 @@ namespace PersonalFinalProject.Data
 
         //Navigation Property
         //A SittingType defines 0-* Sittings
-
         public List<Sitting> Sittings { get; set; } = new List<Sitting>();
     }
 }

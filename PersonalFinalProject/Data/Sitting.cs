@@ -24,6 +24,7 @@ namespace PersonalFinalProject.Data
         //Navigation Property
         //A seating belongs to one and ONLY one SittingType
         public SittingType SittingType { get; set; }
+
         //Navigation Property
         //A seating can be booked by 0-* reservations
         public List<Reservation> Reservations { get; set; } = new();

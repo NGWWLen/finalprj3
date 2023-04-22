@@ -46,10 +46,18 @@ namespace PersonalFinalProject.Data
 
         //Navigation Property
         //One reservation may be booked by ONE guest or ONE user 0-1
+        [Display(Name = "Username")]
         public User? User { get; set; }
 
-        //One reservation can book ONE to MANY sittings 1-*
-        public List<Sitting> Sittings { get; set; }
+        //One reservation can only book ONE sittingID
+            //Breakfast 6AM or 8AM, Lunch 12PM or 2PM, Dinner 6PM or 8PM or 10PM
+            //Whole Breakfast, Whole Lunch, Whole Dinner, Whole Day
+        public Sitting Sitting { get; set; }
+
+        //One reservation can book ZERO to ONE area (NULLABLE)
+        //If a user does not choose, it will be randomized by controller
+        //If a user choose balcony, they'll be alocated to available table near balcony (random table)
+        public Area? Area { get; set; }
 
         //One reservation may book ONE to MANY tables 1-*
         public List<ReservationTable> ReservationTables { get; set; } = new();
@@ -60,6 +68,5 @@ namespace PersonalFinalProject.Data
         //One reservation is always originated from ONE and ONLY ONE source 1-1
         public ReservationSource ReservationSource { get; set; }
 
-  
     }
 }

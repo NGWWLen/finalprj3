@@ -16,5 +16,9 @@ namespace PersonalFinalProject.Data
         //An area can have one to many tables 1-*
         public List<RestaurantTable> RestaurantTables { get; set; } = new();
 
+        //Navigation Property
+        //An area can be booked by one to many reservations
+        public List<Reservation> Reservations { get; set; }
+
     }
 }
