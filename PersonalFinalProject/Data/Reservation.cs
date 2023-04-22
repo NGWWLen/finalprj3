@@ -8,7 +8,7 @@ namespace PersonalFinalProject.Data
         public int Id { get; set; }
 
         [Display(Name ="Start Date/Time")]
-        [Required]
+        [Required(ErrorMessage="Please enter the starting date and time")]
         [DataType(DataType.DateTime)]
         public DateTime Start { get; set; }
 
@@ -16,8 +16,8 @@ namespace PersonalFinalProject.Data
         [Range(1,24)]
         public int Duration { get; set; }
 
-        [Required]
-        [RegularExpression(@"^[0-9]{2}$")]
+        [Required(ErrorMessage = "Please enter the number of guests attending, maximum 40")]
+        [Range(1, 40)]
         [Display(Name = "Guest Number")]
         public string GuestNumber { get; set; }
 
@@ -25,22 +25,22 @@ namespace PersonalFinalProject.Data
         public string Notes { get; set; }
 
         [Display(Name = "First Name")]
-        [Required, MinLength(2), MaxLength(20)]
+        [Required(ErrorMessage = "First Name is Required, minimum length of 2 and maximum length of 20"), MinLength(2), MaxLength(20)]
         [RegularExpression(@"^[A-Za-z-']*$")]
         public string FirstName { get; set; }
 
         [Display(Name = "Last Name")]
-        [Required, MinLength(2), MaxLength(20)]
+        [Required(ErrorMessage = "Last Name is Required, minimum length of 2 and maximum length of 20"), MinLength(2), MaxLength(20)]
         [RegularExpression(@"^[A-Za-z-']*$")]
         public string LastName { get; set; }
 
         [Display(Name = "Phone Number")]
-        [Required]
+        [Required(ErrorMessage = "Phone Number is Required")]
         [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
 
         [Display(Name = "Email Address")]
-        [Required]
+        [Required(ErrorMessage = "Email Address is Required")]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 

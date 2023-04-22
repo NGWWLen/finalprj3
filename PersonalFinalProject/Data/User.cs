@@ -1,35 +1,30 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PersonalFinalProject.Data
 {
     public class User
     {
-        [Key]
-        public int Id { get; set; }
+        [Key, Required]
+        [DataType(DataType.EmailAddress)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Display(Name = "Email Address")]
+        public string Email { get; set; }
 
         [Display(Name = "First Name")]
-        [Required, MinLength(2), MaxLength(20)]
+        [Required(ErrorMessage = "First Name is Required, minimum length of 2 and maximum length of 20"), MinLength(2), MaxLength(20)]
         [RegularExpression(@"^[A-Za-z-']*$")]
         public string FirstName { get; set; }
 
         [Display(Name = "Last Name")]
-        [Required, MinLength(2), MaxLength(20)]
+        [Required(ErrorMessage = "Last Name is Required, minimum length of 2 and maximum length of 20"), MinLength(2), MaxLength(20)]
         [RegularExpression(@"^[A-Za-z-']*$")]
         public string LastName { get; set; }
   
         [Display(Name = "Phone Number")]
-        [Required]
+        [Required(ErrorMessage = "Phone Number is Required")]
         [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
-
-        [Display(Name = "Email Address")]
-        [Required]
-        [DataType(DataType.EmailAddress)]
-        public string Email { get; set; }
-
-        [Required, MinLength(6), MaxLength(20)]
-        [RegularExpression(@"^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[#$^+=!*()@%&]).{6,20}$")]
-        public string Password { get; set; }
 
         //Navigation Property
         //A user can have 0-* reservations

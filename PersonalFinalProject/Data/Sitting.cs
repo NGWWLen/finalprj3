@@ -7,16 +7,18 @@ namespace PersonalFinalProject.Data
         [Key]
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please enter the starting date and time")]
         public DateTime Start { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please enter the ending date and time")]
         public DateTime End { get; set; }
+
         public string Name { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "Please enter the capacity of sitting")]
         public int Capacity{ get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please enter the status of sitting")]
         public Boolean Active { get; set; }
 
         //Navigation Property
