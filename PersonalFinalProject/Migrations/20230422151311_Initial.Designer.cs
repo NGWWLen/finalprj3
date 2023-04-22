@@ -12,8 +12,8 @@ using PersonalFinalProject.Data;
 namespace PersonalFinalProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230422122035_Add-Migration FinalProj")]
-    partial class AddMigrationFinalProj
+    [Migration("20230422151311_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -295,8 +295,8 @@ namespace PersonalFinalProject.Migrations
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -304,7 +304,7 @@ namespace PersonalFinalProject.Migrations
 
                     b.HasIndex("ReservationStatusId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserEmail");
 
                     b.ToTable("Reservations");
                 });
@@ -358,7 +358,7 @@ namespace PersonalFinalProject.Migrations
 
                     b.HasIndex("ReservationId");
 
-                    b.ToTable("ReservationTable");
+                    b.ToTable("ReservationTables");
                 });
 
             modelBuilder.Entity("PersonalFinalProject.Data.Restaurant", b =>
@@ -448,20 +448,13 @@ namespace PersonalFinalProject.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SittingTypes");
+                    b.ToTable("SittingType");
                 });
 
             modelBuilder.Entity("PersonalFinalProject.Data.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
                     b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -473,11 +466,6 @@ namespace PersonalFinalProject.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -485,11 +473,11 @@ namespace PersonalFinalProject.Migrations
                     b.Property<int>("UserTypeId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("Email");
 
                     b.HasIndex("UserTypeId");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("PersonalFinalProject.Data.UserType", b =>
@@ -617,7 +605,7 @@ namespace PersonalFinalProject.Migrations
 
                     b.HasOne("PersonalFinalProject.Data.User", "User")
                         .WithMany("Reservations")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserEmail");
 
                     b.Navigation("ReservationSource");
 

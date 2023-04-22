@@ -8,10 +8,10 @@ namespace PersonalFinalProject.Data
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Please enter the starting date and time")]
-        public DateTime Start { get; set; }
+        public DateTime StartTime { get; set; }
 
         [Required(ErrorMessage = "Please enter the ending date and time")]
-        public DateTime End { get; set; }
+        public DateTime EndTime { get; set; }
 
         public string Name { get; set; }
 

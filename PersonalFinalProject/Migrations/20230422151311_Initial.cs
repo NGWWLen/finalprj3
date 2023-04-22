@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PersonalFinalProject.Migrations
 {
-    public partial class init : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -88,7 +88,7 @@ namespace PersonalFinalProject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SittingTypes",
+                name: "SittingType",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -97,7 +97,20 @@ namespace PersonalFinalProject.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SittingTypes", x => x.Id);
+                    table.PrimaryKey("PK_SittingType", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserType",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserType", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -236,23 +249,37 @@ namespace PersonalFinalProject.Migrations
                     End = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Capacity = table.Column<int>(type: "int", nullable: false),
-                    Active = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SittingTypeId = table.Column<int>(type: "int", nullable: false),
-                    RestaurantId = table.Column<int>(type: "int", nullable: false)
+                    Active = table.Column<bool>(type: "bit", nullable: false),
+                    SittingTypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sittings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Sittings_Restaurants_RestaurantId",
-                        column: x => x.RestaurantId,
-                        principalTable: "Restaurants",
+                        name: "FK_Sittings_SittingType_SittingTypeId",
+                        column: x => x.SittingTypeId,
+                        principalTable: "SittingType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserTypeId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Email);
                     table.ForeignKey(
-                        name: "FK_Sittings_SittingTypes_SittingTypeId",
-                        column: x => x.SittingTypeId,
-                        principalTable: "SittingTypes",
+                        name: "FK_Users_UserType_UserTypeId",
+                        column: x => x.UserTypeId,
+                        principalTable: "UserType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -284,12 +311,16 @@ namespace PersonalFinalProject.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Start = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Guest = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Duration = table.Column<int>(type: "int", nullable: false),
-                    Note = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SittingId = table.Column<int>(type: "int", nullable: false),
-                    ReservationSourceId = table.Column<int>(type: "int", nullable: false),
-                    ReservationStatusId = table.Column<int>(type: "int", nullable: false)
+                    GuestNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserEmail = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ReservationStatusId = table.Column<int>(type: "int", nullable: false),
+                    ReservationSourceId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -307,35 +338,77 @@ namespace PersonalFinalProject.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Reservations_Sittings_SittingId",
-                        column: x => x.SittingId,
+                        name: "FK_Reservations_Users_UserEmail",
+                        column: x => x.UserEmail,
+                        principalTable: "Users",
+                        principalColumn: "Email");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReservationSitting",
+                columns: table => new
+                {
+                    ReservationsId = table.Column<int>(type: "int", nullable: false),
+                    SittingsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReservationSitting", x => new { x.ReservationsId, x.SittingsId });
+                    table.ForeignKey(
+                        name: "FK_ReservationSitting_Reservations_ReservationsId",
+                        column: x => x.ReservationsId,
+                        principalTable: "Reservations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ReservationSitting_Sittings_SittingsId",
+                        column: x => x.SittingsId,
                         principalTable: "Sittings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReservationTable",
+                name: "ReservationTables",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ReservationId = table.Column<int>(type: "int", nullable: true),
-                    RestaurantTableId = table.Column<int>(type: "int", nullable: true)
+                    ReservationId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ReservationTable", x => x.Id);
+                    table.PrimaryKey("PK_ReservationTables", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ReservationTable_Reservations_ReservationId",
+                        name: "FK_ReservationTables_Reservations_ReservationId",
                         column: x => x.ReservationId,
                         principalTable: "Reservations",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReservationTableRestaurantTable",
+                columns: table => new
+                {
+                    ReservationTablesId = table.Column<int>(type: "int", nullable: false),
+                    RestaurantTablesId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReservationTableRestaurantTable", x => new { x.ReservationTablesId, x.RestaurantTablesId });
                     table.ForeignKey(
-                        name: "FK_ReservationTable_RestaurantTables_RestaurantTableId",
-                        column: x => x.RestaurantTableId,
+                        name: "FK_ReservationTableRestaurantTable_ReservationTables_ReservationTablesId",
+                        column: x => x.ReservationTablesId,
+                        principalTable: "ReservationTables",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ReservationTableRestaurantTable_RestaurantTables_RestaurantTablesId",
+                        column: x => x.RestaurantTablesId,
                         principalTable: "RestaurantTables",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -393,19 +466,24 @@ namespace PersonalFinalProject.Migrations
                 column: "ReservationStatusId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reservations_SittingId",
+                name: "IX_Reservations_UserEmail",
                 table: "Reservations",
-                column: "SittingId");
+                column: "UserEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReservationTable_ReservationId",
-                table: "ReservationTable",
+                name: "IX_ReservationSitting_SittingsId",
+                table: "ReservationSitting",
+                column: "SittingsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReservationTableRestaurantTable_RestaurantTablesId",
+                table: "ReservationTableRestaurantTable",
+                column: "RestaurantTablesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReservationTables_ReservationId",
+                table: "ReservationTables",
                 column: "ReservationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReservationTable_RestaurantTableId",
-                table: "ReservationTable",
-                column: "RestaurantTableId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RestaurantTables_AreaId",
@@ -413,14 +491,14 @@ namespace PersonalFinalProject.Migrations
                 column: "AreaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sittings_RestaurantId",
-                table: "Sittings",
-                column: "RestaurantId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Sittings_SittingTypeId",
                 table: "Sittings",
                 column: "SittingTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_UserTypeId",
+                table: "Users",
+                column: "UserTypeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -441,7 +519,10 @@ namespace PersonalFinalProject.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "ReservationTable");
+                name: "ReservationSitting");
+
+            migrationBuilder.DropTable(
+                name: "ReservationTableRestaurantTable");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -450,10 +531,22 @@ namespace PersonalFinalProject.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Reservations");
+                name: "Sittings");
+
+            migrationBuilder.DropTable(
+                name: "ReservationTables");
 
             migrationBuilder.DropTable(
                 name: "RestaurantTables");
+
+            migrationBuilder.DropTable(
+                name: "SittingType");
+
+            migrationBuilder.DropTable(
+                name: "Reservations");
+
+            migrationBuilder.DropTable(
+                name: "Areas");
 
             migrationBuilder.DropTable(
                 name: "ReservationSources");
@@ -462,16 +555,13 @@ namespace PersonalFinalProject.Migrations
                 name: "ReservationStatuses");
 
             migrationBuilder.DropTable(
-                name: "Sittings");
-
-            migrationBuilder.DropTable(
-                name: "Areas");
-
-            migrationBuilder.DropTable(
-                name: "SittingTypes");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Restaurants");
+
+            migrationBuilder.DropTable(
+                name: "UserType");
         }
     }
 }
