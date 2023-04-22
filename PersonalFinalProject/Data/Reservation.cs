@@ -4,15 +4,43 @@ namespace PersonalFinalProject.Data
 {
     public class Reservation
     {
+        [Key]
         public int Id { get; set; }
+
+        [Display(Name ="Start Date/Time")]
+        [Required]
+        [DataType(DataType.DateTime)]
         public DateTime Start { get; set; }
+
+        [Required]
+        [RegularExpression(@"^[0-9]{2}$")]
         public int Duration { get; set; }
+
+        [Required]
+        [RegularExpression(@"^[0-9]{2}$")]
+        [Display(Name = "Guest Number")]
         public string GuestNumber { get; set; }
+
+        [Required, MaxLength(100)]
         public string Notes { get; set; }
+
+        [Display(Name = "First Name")]
+        [Required, MinLength(2), MaxLength(20)]
+        [RegularExpression(@"^[A-Za-z-']*$")]
         public string FirstName { get; set; }
+
+        [Display(Name = "Last Name")]
+        [Required, MinLength(2), MaxLength(20)]
+        [RegularExpression(@"^[A-Za-z-']*$")]
         public string LastName { get; set; }
+
+        [Display(Name = "Phone Number")]
+        [Required]
+        [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
 
+        [Display(Name = "Email Address")]
+        [Required]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
