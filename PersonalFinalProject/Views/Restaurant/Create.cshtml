@@ -1,0 +1,16 @@
+﻿@model PersonalFinalProject.Models.RestaurantViewModel
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<form asp-action="Create">
+    <div>
+        <label>Restaurant Name: </label>
+        <input asp-for="Name" type="text"/>
+    </div>
+
+    <input type="submit" value="save" />
+</form>
+
