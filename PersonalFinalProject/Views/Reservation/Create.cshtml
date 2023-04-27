@@ -1,0 +1,69 @@
+﻿@model PersonalFinalProject.Models.ReservationViewModel
+
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create a new Reservation</h1>
+
+<form asp-action="Create">
+    <div style="border:1px solid red; padding:10px; margin:10px">
+    <div>
+        <label>First Name: </label>
+        <input asp-for="FirstName" type="text"/>
+    </div>
+    <div>
+        <label>Last Name: </label>
+        <input asp-for="LastName" type="text"/>
+    </div>
+    <div>
+        <label>Phone Number: </label>
+        <input asp-for="PhoneNumber" type="tel" placeholder="0123 456 789" />
+    </div>
+    <div>
+        <label>Email: </label>
+        <input asp-for="Email" type="email"/>
+    </div>
+    <div>
+        <label>Date:</label>
+        <input asp-for="Start" type="date"/>
+    </div>
+    <div>
+        <label>Sittings:</label>
+        <select asp-for="Sitting" id="sittings">
+            <option value=0>Select a sitting for today</option>
+            <option value=1>Breakfast (Manager Only)</option>
+            <option value=2>Lunch (Manager Only)</option>
+            <option value=3>Dinner (Manager Only)</option>
+            <option value=4>Whole Day (Manager Only)</option>
+            <option value=7>7 AM Breakfast</option>
+            <option value=9>9 AM Breakfast</option>
+            <option value=12>12 PM Lunch</option>
+            <option value=14>2 PM Lunch</option>
+            <option value=18>6 PM Dinner</option>
+            <option value=20>8 PM Dinner</option>
+        </select>
+    </div>
+    <div>
+        <label>Requested Area (Will only be allocated if there are available tables on the area):</label>
+        <select asp-for="Area" id="areas">
+            <option value=0>Any</option>
+            <option value=1>Main</option>
+            <option value=2>Outside</option>
+            <option value=3>Balcony</option>
+        </select>
+    </div>
+    <div>
+        <label>Guest Number: </label>
+        <input asp-for="GuestNumber" type="guestNumber"/>
+    </div>
+    <div>
+        <label>Special Request (optional): </label>
+        <input asp-for="Notes" type="text"/>
+    </div>
+
+
+    </div>
+    <input type="submit" value="Save"/>
+</form>

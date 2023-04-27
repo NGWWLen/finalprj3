@@ -19,9 +19,9 @@ namespace PersonalFinalProject.Data
         [Required(ErrorMessage = "Please enter the number of guests attending, maximum 40")]
         [Range(1, 40)]
         [Display(Name = "Guest Number")]
-        public string GuestNumber { get; set; }
+        public int GuestNumber { get; set; }
 
-        [Required, MaxLength(100)]
+        [MaxLength(100)]
         public string Notes { get; set; }
 
         [Display(Name = "First Name")]
@@ -36,6 +36,7 @@ namespace PersonalFinalProject.Data
 
         [Display(Name = "Phone Number")]
         [Required(ErrorMessage = "Phone Number is Required")]
+        [RegularExpression(@"^(?:\+?(61))? ?(?:\((?=.*\)))?(0?[2-57-8])\)? ?(\d\d(?:[- ](?=\d{3})|(?!\d\d[- ]?\d[- ]))\d\d[- ]?\d[- ]?\d{3})$")]
         [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
 

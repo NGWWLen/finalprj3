@@ -1,0 +1,19 @@
+﻿@model List<PersonalFinalProject.Data.Reservation>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Reservation - Index</h1>
+<div><a asp-action="Create">Create A Reservation</a></div>
+
+<div>
+    @foreach(var r in Model)
+    {
+        <div>
+            <div>@r.FirstName @r.LastName</div>
+            <div><a asp-action="Details" asp-route-id="@r.Id">Details</a></div>
+            
+        </div>
+    }
+</div>
