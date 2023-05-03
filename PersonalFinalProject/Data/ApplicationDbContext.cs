@@ -15,8 +15,6 @@ namespace PersonalFinalProject.Data
         public DbSet<RestaurantTable> RestaurantTables { get; set; }
         public DbSet<Sitting> Sittings { get; set; }
         public DbSet<SittingType> SittingTypes { get; set; }
-        public DbSet<User> Users { get; set; }
-        public DbSet<SittingType> UserTypes { get; set; }
 
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

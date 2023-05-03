@@ -12,7 +12,6 @@ namespace PersonalFinalProject.Data
         [DataType(DataType.DateTime)]
         public DateTime Start { get; set; }
 
-        [Required]
         [Range(1,24)]
         public int Duration { get; set; }
 
@@ -44,11 +43,6 @@ namespace PersonalFinalProject.Data
         [Required(ErrorMessage = "Email Address is Required")]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
-
-        //Navigation Property
-        //One reservation may be booked by ONE guest or ONE user 0-1
-        [Display(Name = "Username")]
-        public User? User { get; set; }
 
         //One reservation can only book ONE sittingID
             //Breakfast 6AM or 8AM, Lunch 12PM or 2PM, Dinner 6PM or 8PM or 10PM

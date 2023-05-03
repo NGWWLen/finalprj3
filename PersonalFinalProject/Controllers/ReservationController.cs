@@ -46,37 +46,36 @@ namespace PersonalFinalProject.Controllers
         {
             //Prepare boolean to prevent pushing to database
             var validBooking = true;
-            var sittingId = await getSittingId(rvm);
-            // WIP - var areaId = getAreaId(rvm, sittingId);
-
 
             //Variable to store the new Reservation --> Right now we are mostly hard coding it, we will work on it in the future
             Reservation newReservation = new Reservation();
-            newReservation.Sitting = await _context.Sittings.FindAsync(sittingId);
-            newReservation.Start = getStartDateTime(rvm);
-            newReservation.Duration = getDuration(rvm);
+
+            newReservation.Start = rvm.Start;
+            newReservation.Duration = rvm.Duration;
             newReservation.GuestNumber = rvm.GuestNumber;
             newReservation.FirstName = rvm.FirstName;
             newReservation.LastName = rvm.LastName;
             newReservation.PhoneNumber = rvm.PhoneNumber;
             newReservation.Email = rvm.Email;
-            newReservation.Notes = rvm.Notes;                      //Sitting Id for lunch 12pm
-            newReservation.ReservationStatus = await _context.ReservationStatuses.FindAsync(1); //1 for pending
-            newReservation.ReservationSource = await _context.ReservationSources.FindAsync(1);  //1 for Website
-            newReservation.User = null;                                                         //For now we dont bother about user until we create authorization
-            newReservation.Area = await _context.Areas.FindAsync(2);                            //2 for Outside
+            newReservation.Notes = rvm.Notes;                      
+            newReservation.ReservationStatus = await _context.ReservationStatuses.FindAsync(1); //1 for pending - default
+            newReservation.ReservationSource = await _context.ReservationSources.FindAsync(1);  //1 for Website - default
+
+            newReservation.Sitting = await _context.Sittings.FindAsync(1);                      //Hardcode
+            newReservation.Area = await _context.Areas.FindAsync(2);                            //Hardcode
+
 
             //Register the new Reservation
             _context.Reservations.Add(newReservation);
             await _context.SaveChangesAsync();
 
             var registeredReservation = await _context.Reservations.OrderByDescending(r => r.Id).LastAsync();
-            Console.WriteLine(registeredReservation);
 
             //Need to update ReservationTables (pass the registered reservation with last id)
             return View();
         }
 
+        /*
         private async Task<int> getSittingId(ReservationViewModel rvm)
         {
             DateTime startDateTime, endDateTime;
@@ -120,6 +119,7 @@ namespace PersonalFinalProject.Controllers
 
             return 1;  //If sitting Id cannot be found, return 1, means its inappropriate reservation ??? Need to do try catch or something
         }
+        */
 
         /*
         private async Task<int> getAreaId(ReservationViewModel rvm, int sittingId)

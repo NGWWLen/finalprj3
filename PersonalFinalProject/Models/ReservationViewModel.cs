@@ -38,14 +38,7 @@ namespace PersonalFinalProject.Models
 
         [Required(ErrorMessage = "Please enter the starting date")]
         public DateTime Start { get; set; }
+        public int Duration { get; set; }   
 
-
-
-        //Automatic PENDING / 1
-        //public ReservationStatus ReservationStatus { get; set; }
-        //Automatic 1 2 3 4 5 (1 for now as it is website)
-        //public ReservationSource ReservationSource { get; set; }
-        //Automatically generated according to Area and GuestNumber
-        //public List<ReservationTable> ReservationTables { get; set; } = new();
     }
 }
