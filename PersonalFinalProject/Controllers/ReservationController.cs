@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using PersonalFinalProject.Data;
 using PersonalFinalProject.Models;
 using Microsoft.Data.Sqlite;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 
 namespace PersonalFinalProject.Controllers
 {
@@ -32,6 +34,88 @@ namespace PersonalFinalProject.Controllers
             }
             return View(r);
         }
+        
+        [HttpGet]
+        public async Task<IActionResult> EditDetails(int id)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.ReservationStatus)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+
+            var statuses = _context.ReservationStatuses.ToList();
+            ViewBag.ReservationStatuses = new SelectList(statuses, "Id", "Name", reservation.ReservationStatus);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+            return View(reservation);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditDetails(Reservation s)
+        {
+            var reservation = await _context.Reservations
+                .Include(_ => _.Sitting)
+                .Include(_ => _.ReservationStatus)
+                .FirstOrDefaultAsync(r => r.Id == s.Id);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+            //if (ModelState.IsValid)
+            //{
+
+            var existingStatus = await _context.ReservationStatuses.FirstOrDefaultAsync(e => e.Id == s.ReservationStatus.Id);
+
+            if (existingStatus == null)
+            {
+                return NotFound("Status not found");
+            }
+
+            int original = reservation.GuestNumber;
+
+            reservation.GuestNumber = s.GuestNumber;
+            reservation.ReservationStatus = existingStatus;
+            reservation.Start = s.Start;
+            reservation.Duration = s.Duration;
+
+
+
+
+
+            await _context.SaveChangesAsync();
+
+            if (reservation.ReservationStatus.Name == "cancelled")
+            {
+
+                reservation.GuestNumber = 0;
+
+            }
+
+            await _context.SaveChangesAsync();
+
+
+            var sitting = await _context.Sittings.FirstOrDefaultAsync(sa => sa.Id == reservation.SittingId);
+
+
+            sitting.Capacity += original;
+            await _context.SaveChangesAsync();
+            sitting.Capacity -= reservation.GuestNumber;
+            _context.Update(sitting);
+            await _context.SaveChangesAsync();
+
+
+
+            //await _context.SaveChangesAsync();
+
+
+
+
+            return RedirectToAction("Reservation");
+            //}
+            //return View();
+        }
 
 
         [HttpGet]
@@ -40,6 +124,7 @@ namespace PersonalFinalProject.Controllers
             return View();
         }
 
+        public IList<Sitting> TheSittingId { get; set; }
 
         [HttpPost]
         public async Task<IActionResult> Create(ReservationViewModel rvm)
@@ -47,9 +132,7 @@ namespace PersonalFinalProject.Controllers
             //Prepare boolean to prevent pushing to database
             var validBooking = true;
 
-            //Variable to store the new Reservation --> Right now we are mostly hard coding it, we will work on it in the future
             Reservation newReservation = new Reservation();
-
             newReservation.Start = rvm.Start;
             newReservation.Duration = rvm.Duration;
             newReservation.GuestNumber = rvm.GuestNumber;
@@ -57,164 +140,76 @@ namespace PersonalFinalProject.Controllers
             newReservation.LastName = rvm.LastName;
             newReservation.PhoneNumber = rvm.PhoneNumber;
             newReservation.Email = rvm.Email;
-            newReservation.Notes = rvm.Notes;                      
-            newReservation.ReservationStatus = await _context.ReservationStatuses.FindAsync(1); //1 for pending - default
-            newReservation.ReservationSource = await _context.ReservationSources.FindAsync(1);  //1 for Website - default
+            newReservation.ReservationStatusId = 1;  //1 for pending - default
+            newReservation.ReservationSourceId = 1;  //1 for Website - default
 
-            newReservation.Sitting = await _context.Sittings.FindAsync(1);                      //Hardcode
-            newReservation.Area = await _context.Areas.FindAsync(2);                            //Hardcode
+            //Notes
+            if (rvm.Notes == null)
+            {
+                newReservation.Notes = "";
+            }
+            else
+            {
+                newReservation.Notes = rvm.Notes;
+            }
 
+            //SittingId
+            var endTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, (rvm.Start.Hour + rvm.Duration), 0, 0);
+            if (rvm.Sitting == 0)
+            {
+                var sqlStartTime = new SqlParameter("@sqlStartTime", rvm.Start);
+                var sqlEndTime = new SqlParameter("@sqlEndTime", endTime);
 
-            //Register the new Reservation
-            _context.Reservations.Add(newReservation);
-            await _context.SaveChangesAsync();
+                var result = _context.Sittings
+                    .Where(s => s.StartTime <= rvm.Start && s.EndTime >= endTime && s.Id != 4)
+                    .FirstOrDefault()?.Id;
 
-            var registeredReservation = await _context.Reservations.OrderByDescending(r => r.Id).LastAsync();
+                if (result != null)
+                {
+                    //If there's existing sittingId at the said time and date, means booking is valid
+                    newReservation.SittingId = (int)result;
+                }
+                else
+                {
+                    validBooking = false;
+                }
 
-            //Need to update ReservationTables (pass the registered reservation with last id)
+            }
+
+            //Check Capacity in sittings
+            if (validBooking)
+            {
+                var capacity = _context.Sittings
+                    .Where(s => s.StartTime <= rvm.Start && s.EndTime >= endTime && s.Id != 4)
+                    .FirstOrDefault()?.Capacity;
+
+                if (capacity < rvm.GuestNumber)
+                {
+                    validBooking = false;
+                }
+                //If there's enough capacity, means booking is valid
+            }
+
+            //Area --> Will be set up according to special note request & will be done during staff confirmation
+            newReservation.Area = null;
+
+            if (validBooking)
+            {
+                //Register the new Reservation
+                _context.Reservations.Add(newReservation);
+                await _context.SaveChangesAsync();
+
+                //Reduce the capacity of sittings! (UPDATE DTB)
+                var sittingToUpdate = _context.Sittings.FirstOrDefault(s => s.Id == newReservation.SittingId);
+                if (sittingToUpdate != null)
+                {
+                    sittingToUpdate.Capacity = sittingToUpdate.Capacity - newReservation.GuestNumber;
+                    _context.SaveChanges();
+                }
+
+                //After a staff confirmed this reservation, we also have to fill the Reservation-Table table
+            }
             return View();
         }
-
-        /*
-        private async Task<int> getSittingId(ReservationViewModel rvm)
-        {
-            DateTime startDateTime, endDateTime;
-
-            //From the sitting input, figure out the start and end time of reservation
-            switch (rvm.Sitting)
-            {
-                case 1:
-                    startDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, 7, 0, 0);
-                    endDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, 11, 0, 0);
-                    break;
-                case 2:
-                    startDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, 12, 0, 0);
-                    endDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, 16, 0, 0);
-                    break;
-                case 3:
-                    startDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, 18, 0, 0);
-                    endDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, 22, 0, 0);
-                    break;
-                case 4:
-                    startDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, 7, 0, 0);
-                    endDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, 22, 0, 0);
-                    break;
-                default:
-                    startDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, rvm.Sitting, 0, 0);
-                    endDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, (rvm.Sitting + 2), 0, 0);
-                    break;
-            }
-
-            //Parameter for SQL Query
-            var sqlStartDateTime = new SqliteParameter("@sqlStartDateTime", startDateTime);
-            var sqlEndDateTime = new SqliteParameter("@sqlEndDateTime", endDateTime);
-
-            //Get Sitting where the start date time & start end time ...
-            var Sitting = await _context.Sittings.FirstOrDefaultAsync(s => s.StartTime == startDateTime && s.EndTime == endDateTime);
-
-            if (Sitting != null)
-            {
-                return Sitting.Id;
-            }
-
-            return 1;  //If sitting Id cannot be found, return 1, means its inappropriate reservation ??? Need to do try catch or something
-        }
-        */
-
-        /*
-        private async Task<int> getAreaId(ReservationViewModel rvm, int sittingId)
-        {
-            var _area = rvm.Area;
-            var _sittingId = sittingId;
-            var _guestNumber = rvm.GuestNumber;
-
-
-            //Check if there are available tables in the area
-
-            var sqlAreaId = new SqliteParameter("@sqlAreaId", _area);
-            var sqlSittingId = new SqliteParameter("@sqlSittingId", _sittingId);
-            var sqlGuestNumber = new SqliteParameter("@sqlGuestNumber", _guestNumber);
-
-            var isAreaAvailableQueryResult = _context.RestaurantTables.FromSqlRaw(
-            "SELECT [RestaurantTables].[AreaId] From [RestaurantTables] "
-            + "where [RestaurantTables].[Id] NOT IN ( "
-            + "SELECT [ReservationTables].[RestaurantTableId] "
-            + "from [RestaurantTables], [Reservations] "
-            + "where [RestaurantTables].[ReservationId] = [Reservations].[Id] "
-            + "and [Reservations].[SittingId] = @sqlSittingId ) "
-            + "GROUP BY [RestaurantTables].[AreaId] "
-            + "HAVING COUNT(*) >= @sqlGuestNumber and [RestaurantTables].[AreaId] >= @sqlAreaId; "
-            , sqlSittingId, sqlGuestNumber, sqlAreaId);
-
-            var a = isAreaAvailableQueryResult;
-            var b = isAreaAvailableQueryResult;
-            var c = isAreaAvailableQueryResult;
-            var d = isAreaAvailableQueryResult;
-
-            //Broke here.
-            var resultAreaObject = isAreaAvailableQueryResult.Select(rt => rt.Area).ToList().FirstOrDefault();
-
-            var e = resultAreaObject;
-            var f = resultAreaObject;
-            var g = resultAreaObject;
-            var h = resultAreaObject;
-
-            var hello = "string";
-             if (resultAreaObject.Id == _area)
-                return _area;
-            return -999;
-
-
-        }
-        */
-        private DateTime getStartDateTime(ReservationViewModel rvm)
-        {
-            DateTime startDateTime;
-            switch(rvm.Sitting)
-            {
-                case 1:
-                    startDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, 7, 0, 0);
-                    break;
-                case 2:
-                    startDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, 12, 0, 0);
-                    break;
-                case 3:
-                    startDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, 18, 0, 0);
-                    break;
-                case 4:
-                    startDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, 7, 0, 0);
-                    break;
-                default:
-                    startDateTime = new DateTime(rvm.Start.Year, rvm.Start.Month, rvm.Start.Day, rvm.Sitting, 0, 0);
-                    break;
-            }
-            return startDateTime;
-        }
-
-        private int getDuration(ReservationViewModel rvm)
-        {
-            int duration;
-            switch (rvm.Sitting)
-            {
-                case 1:
-                    duration = 4;
-                    break;
-                case 2:
-                    duration = 4;
-                    break;
-                case 3:
-                    duration = 4;
-                    break;
-                case 4:
-                    duration = 15;
-                    break;
-                default:
-                    duration = 2;
-                    break;
-            }
-            return duration;
-        }
-
-
     }
 }

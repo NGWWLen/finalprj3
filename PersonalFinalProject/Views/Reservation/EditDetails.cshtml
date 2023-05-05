@@ -1,0 +1,47 @@
+﻿@using PersonalFinalProject.Data
+@model Reservation
+@{
+    ViewData["Title"] = "EditDetails";
+}
+
+<h1>Edit Reservation</h1>
+
+<form asp-action="EditReservation">
+
+    <div>
+        <label>Number of Guest</label>
+        <input asp-for="GuestNumber" />
+        <span asp-validation-for="GuestNumber" class="text-danger"></span>
+    </div>
+    <div>
+        <label>Start Time</label>
+        <input asp-for="Start" />
+        <span asp-validation-for="Start" class="text-danger"></span>
+
+    </div>
+    <div>
+        <label>Duration</label>
+        <input asp-for="Duration" />
+        <span asp-validation-for="Duration" class="text-danger"></span>
+
+     @* <label>Status</label>
+        <input asp-for="Status.Name" />
+        <span asp-validation-for="Status.Name" class="text-danger"></span>
+
+        @
+   @      <label>Status</label>
+        <select asp-for="Status.Id" asp-items="@Model.Status.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.Name })">
+            <option value="">-- Select a status --</option>
+        </select>
+        <span asp-validation-for="Status.Id" class="text-danger"></span>
+
+        
+    </div>
+    <div>
+    <label>Status</label>
+    @Html.DropDownListFor(m => m.Status.Id, ViewBag.Statuses as SelectList, "-- Select Status --", new { @class = "form-control", id = "StatusId" })
+    <span asp-validation-for="Status.Id" class="text-danger"></span>
+    </div>
+*@
+    <input type="submit" value="Save" />
+</form>

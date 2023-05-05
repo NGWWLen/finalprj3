@@ -45,8 +45,10 @@ namespace PersonalFinalProject.Data
         public string Email { get; set; }
 
         //One reservation can only book ONE sittingID
-            //Breakfast 6AM or 8AM, Lunch 12PM or 2PM, Dinner 6PM or 8PM or 10PM
-            //Whole Breakfast, Whole Lunch, Whole Dinner, Whole Day
+        //Breakfast 6AM or 8AM, Lunch 12PM or 2PM, Dinner 6PM or 8PM or 10PM
+        //Whole Breakfast, Whole Lunch, Whole Dinner, Whole Day
+
+        public int SittingId { get; set; }
         public Sitting Sitting { get; set; }
 
         //One reservation can book ZERO to ONE area (NULLABLE)
@@ -58,10 +60,11 @@ namespace PersonalFinalProject.Data
         public List<ReservationTable> ReservationTables { get; set; } = new();
 
         //One reservation can only have ONE status at the time 1-1
+        public int ReservationStatusId { get; set; }
         public ReservationStatus ReservationStatus { get; set; }
 
         //One reservation is always originated from ONE and ONLY ONE source 1-1
+        public int ReservationSourceId { get; set; }
         public ReservationSource ReservationSource { get; set; }
-
     }
 }
