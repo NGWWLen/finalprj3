@@ -38,7 +38,10 @@ namespace PersonalFinalProject.Models
 
         [Required(ErrorMessage = "Please enter the starting date")]
         public DateTime Start { get; set; }
-        public int Duration { get; set; }   
+        public int Duration { get; set; }
+        public string ReservationStatus { get; set; }
+        public string ReservationSource { get; set; }
+        public string AreaName { get; set; }
 
     }
 }

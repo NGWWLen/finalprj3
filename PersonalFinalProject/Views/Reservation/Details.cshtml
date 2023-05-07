@@ -1,4 +1,4 @@
-﻿@model PersonalFinalProject.Data.Reservation
+﻿@model PersonalFinalProject.Models.ReservationViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -7,5 +7,49 @@
 <h1>Reservations - Details</h1>
 
 <div>
-    @Model.FirstName @Model.LastName
+    <div>
+        <label>Name: </label>
+        <input type="text" ReadOnly value="@Model.FirstName @Model.LastName" disabled />
+    </div>
+    <div>
+        <label>Phone Number: </label>
+        <input type="text" ReadOnly value="@Model.PhoneNumber" disabled />
+    </div>
+    <div>
+        <label>Email: </label>
+        <input type="text" ReadOnly value="@Model.Email" disabled />
+    </div>
+    <div>
+        <label>Start Time: </label>
+        <input type="text" ReadOnly value="@Model.Start" disabled />
+    </div>
+    <div>
+        <label>Duration: </label>
+        <input type="text" ReadOnly value="@Model.Duration hours" disabled />
+    </div>
+    <div>
+        <label>Guest Number: </label>
+        <input type="text" ReadOnly value="@Model.GuestNumber" disabled />
+    </div>
+    <div>
+        <label>Notes: </label>
+        <input type="text" ReadOnly value="@Model.Notes" disabled />
+    </div>
+    <div>
+        <label>ReservationStatus: </label>
+        <input type="text" ReadOnly value="@Model.ReservationStatus" disabled />
+    </div>
+    <div>
+        <label>ReservationSource: </label>
+        <input type="text" ReadOnly value="@Model.ReservationSource" disabled />
+    </div>
+    <div>
+        <label>SittingId: </label>
+        <input type="text" ReadOnly value="@Model.Sitting" disabled />
+    </div>
+    <div>
+        <label>AreaId: </label>
+        <input type="text" ReadOnly value="@Model.Area" disabled />
+    </div>
+    <div><a asp-action="Index">Back Index</a></div>
 </div>

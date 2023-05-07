@@ -28,11 +28,34 @@ namespace PersonalFinalProject.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var r = await _context.Reservations.FirstOrDefaultAsync(r => r.Id == id);
+
             if (r == null)
             {
                 return NotFound();
             }
-            return View(r);
+
+            var rvm = new ReservationViewModel();
+            rvm.Start = r.Start;
+            rvm.Duration = r.Duration;
+            rvm.GuestNumber = r.GuestNumber;
+            rvm.Notes = r.Notes;
+            rvm.FirstName = r.FirstName;
+            rvm.LastName = r.LastName;
+            rvm.PhoneNumber = r.PhoneNumber;
+            rvm.Email = r.Email;
+            rvm.Sitting = r.SittingId;
+            if (r.Area != null)
+            {
+                rvm.AreaName = r.Area.Name;
+            }
+            else
+            {
+                rvm.AreaName = "";
+            }
+            rvm.ReservationSource = getReservationSource(r.ReservationSourceId);
+            rvm.ReservationStatus = getReservationStatus(r.ReservationStatusId);
+
+            return View(rvm);
         }
         
         [HttpGet]
@@ -210,6 +233,55 @@ namespace PersonalFinalProject.Controllers
                 //After a staff confirmed this reservation, we also have to fill the Reservation-Table table
             }
             return View();
+        }
+
+        private string getReservationStatus (int status)
+        {
+            switch (status)
+            {
+                case 1:
+                    return "Pending";
+                    break;
+                case 2:
+                    return "Confirmed";
+                    break;
+                case 3:
+                    return "Canceled";
+                    break;
+                case 4:
+                    return "Seated";
+                    break;
+                case 5:
+                    return "Completed";
+                    break;
+                default:
+                    break;
+            }
+            return "";
+        }
+        private string getReservationSource(int source)
+        {
+            switch (source)
+            {
+                case 1:
+                    return "Website";
+                    break;
+                case 2:
+                    return "Mobile App";
+                    break;
+                case 3:
+                    return "Email";
+                    break;
+                case 4:
+                    return "Phone Call";
+                    break;
+                case 5:
+                    return "In Person";
+                    break;
+                default:
+                    break;
+            }
+            return "";
         }
     }
 }
