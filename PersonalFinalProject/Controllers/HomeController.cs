@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using PersonalFinalProject.Data;
@@ -6,6 +7,7 @@ using PersonalFinalProject.Models;
 
 namespace PersonalFinalProject.Controllers
 {
+    [Authorize(Roles = "Admin, Manager, Employee, Member")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

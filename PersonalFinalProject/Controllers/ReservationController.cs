@@ -5,6 +5,7 @@ using PersonalFinalProject.Models;
 using Microsoft.Data.Sqlite;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PersonalFinalProject.Controllers
 {
@@ -19,12 +20,14 @@ namespace PersonalFinalProject.Controllers
             _context = context;
         }
 
+        [Authorize(Roles = "Admin, Manager, Employee, Member")]
         public async Task<IActionResult> Index()
         {
             var reservations = await _context.Reservations.ToListAsync();
             return View(reservations);
         }
 
+        [Authorize(Roles = "Admin, Manager, Employee, Member")]
         public async Task<IActionResult> Details(int id)
         {
             var r = await _context.Reservations.FirstOrDefaultAsync(r => r.Id == id);
@@ -57,7 +60,9 @@ namespace PersonalFinalProject.Controllers
 
             return View(rvm);
         }
-        
+
+
+        [Authorize(Roles = "Admin, Manager, Employee, Member")]
         [HttpGet]
         public async Task<IActionResult> EditDetails(int id)
         {
@@ -75,6 +80,9 @@ namespace PersonalFinalProject.Controllers
             }
             return View(reservation);
         }
+
+
+        [Authorize(Roles = "Admin, Manager, Employee, Member")]
         [HttpPost]
         public async Task<IActionResult> EditDetails(Reservation s)
         {
@@ -147,7 +155,10 @@ namespace PersonalFinalProject.Controllers
             return View();
         }
 
+
         public IList<Sitting> TheSittingId { get; set; }
+
+        [Authorize(Roles = "Admin, Manager, Employee, Member")]
 
         [HttpPost]
         public async Task<IActionResult> Create(ReservationViewModel rvm)
